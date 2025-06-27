@@ -310,7 +310,15 @@
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 selectedFile = fileInput.files[0];
-                resultDisplay.innerHTML = `<p>Selected file: ${selectedFile.name}</p>`;
+                const resultDisplay = document.querySelector('.result-display');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    resultDisplay.innerHTML = `
+                        <p>Selected file: ${file.name}</p>
+                        <img src="${e.target.result}" alt="Selected Image Preview" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 10px;">
+                    `;
+                };
+                reader.readAsDataURL(file);
             }
         });
 
@@ -327,8 +335,7 @@
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             if (e.dataTransfer.files.length > 0) {
-                selectedFile = e.dataTransfer.files[0];
-                resultDisplay.innerHTML = `<p>Selected file: ${selectedFile.name}</p>`;
+                handleFile(e.dataTransfer.files[0]);
             }
         });
 
