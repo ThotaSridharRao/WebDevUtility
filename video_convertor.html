@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Tools - Video Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Define CSS Variables for the default (dark) theme */
+        :root {
+            --primary-color: #1abc9c; /* Dark mode primary green */
+            --secondary-color: #2ecc71; /* Dark mode secondary green */
+            --accent-color: #3498db; /* Dark mode accent blue */
+            --bg-color: #2c3e50; /* Dark mode background */
+            --header-bg: #34495e; /* Dark mode header */
+            --card-bg: #3b506b; /* Dark mode card */
+            --text-color: #ecf0f1; /* Dark mode text */
+            --button-bg: #1abc9c; /* Dark mode button */
+            --button-text: #FFFFFF;
+            --border-color: #5a708a; /* Dark mode border */
+            --shadow-color: rgba(0, 0, 0, 0.3); /* Dark mode shadow */
+        }
+
+        /* General Styles - now directly using dark theme variables */
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            padding: 20px 0;
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative; /* Needed for absolute positioning of menu */
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color); /* Logo color is now dark theme text color */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .cta-button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .primary-button {
+            background-color: var(--primary-color);
+            color: var(--button-text);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .tool-section {
+            padding: 80px 0;
+            background-color: var(--header-bg);
+            transition: background-color 0.3s;
+        }
+
+        .tool-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            max-width: 800px;
+            margin: 0 auto;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: border-color 0.3s, background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area.dragover {
+            background-color: var(--bg-color);
+            border-color: var(--button-bg);
+        }
+
+        .upload-area a {
+            color: var(--text-color);
+            text-decoration: underline;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .options label {
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+
+        .options select {
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .result-display {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        footer {
+            background-color: var(--header-bg);
+            padding: 40px 0;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .footer-links a {
+            margin: 0 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer p {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+
+        .remove-file-btn { /* Renamed from remove-image-btn for generality */
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            box-shadow: 0px 2px 8px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .remove-file-btn:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .preview-card {
+            position: relative;
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            box-shadow: 0px 2px 8px var(--shadow-color);
+            width: fit-content;
+            transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .preview-icon-container { /* Renamed from preview-image-container */
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--accent-color); /* Placeholder background */
+        }
+
+        .preview-icon { /* New style for generic file icon */
+            font-size: 40px;
+            color: var(--primary-color);
+        }
+
+        .preview-filename {
+            font-size: 14px;
+            color: var(--text-color);
+            word-break: break-all;
+            text-align: left;
+            max-width: 150px;
+            transition: color 0.3s;
+        }
+
+        /* Message Box Styles */
+        .message-box {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: none; /* Hidden by default, shown on small screens */
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Above other content */
+        }
+
+        .hamburger-menu .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+
+        /* Floating Nav Menu */
+        .floating-nav {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; /* Position below header */
+            right: 20px;
+            background-color: var(--header-bg);
+            box-shadow: 0px 8px 16px var(--shadow-color);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            min-width: 180px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .floating-nav.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .floating-nav ul {
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+        }
+
+        .floating-nav ul li {
+            margin: 0;
+            width: 100%;
+        }
+
+        .floating-nav ul li a {
+            padding: 10px 20px;
+            display: block;
+            color: var(--text-color);
+            text-align: left;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .floating-nav ul li a:hover {
+            background-color: var(--card-bg);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: row; /* Keep logo and hamburger on one line */
+                justify-content: space-between; /* Space them out */
+            }
+
+            nav {
+                display: none; /* Hide regular nav on small screens */
+            }
+
+            .hamburger-menu {
+                display: flex; /* Show hamburger on small screens */
+            }
+
+            .cta-button {
+                display: none; /* Hide CTA button on smaller screens to make space */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Utility Tools</a>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="image_convertor.html">Image Converter</a></li>
+                    <li><a href="#">Text Tools</a></li>
+                    <li><a href="#">Unit Converter</a></li>
+                </ul>
+            </nav>
+            <button class="cta-button">Try the Tool</button>
+            <div class="hamburger-menu" id="hamburger-menu">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="floating-nav" id="floating-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="image_convertor.html">Image Converter</a></li>
+                    <li><a href="#">Text Tools</a></li>
+                    <li><a href="#">Unit Converter</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="tool-section" class="tool-section">
+            <div class="container">
+                <div class="tool-card">
+                    <h1>Video Converter</h1>
+                    <p>Convert video files between various formats.</p>
+                    <div id="message-container"></div> <!-- Container for messages -->
+                    <div class="upload-area">
+                        <p>Drag & drop your video here or <a href="#" id="browse-link">browse</a></p>
+                        <input type="file" id="file-input" hidden accept="video/*">
+                    </div>
+                    <div class="options">
+                        <label for="format-select">Convert to:</label>
+                        <select id="format-select">
+                            <option value="mp4">MP4</option>
+                            <option value="avi">AVI</option>
+                            <option value="mov">MOV</option>
+                            <option value="webm">WEBM</option>
+                        </select>
+                        <button id="convert-btn" class="primary-button">Convert</button>
+                    </div>
+                    <div class="result-display">
+                        <!-- Result will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <p>Built by developers, for developers.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadArea = document.querySelector('.upload-area');
+            const browseLink = document.getElementById('browse-link');
+            const fileInput = document.getElementById('file-input');
+            const formatSelect = document.getElementById('format-select');
+            const convertBtn = document.getElementById('convert-btn');
+            const resultDisplay = document.querySelector('.result-display');
+            const messageContainer = document.getElementById('message-container');
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const floatingNav = document.getElementById('floating-nav');
+            const mainNav = document.getElementById('main-nav');
+
+            let selectedFile = null;
+
+            // Function to display messages
+            function showMessage(message, type = 'info') {
+                messageContainer.innerHTML = `<div class="message-box ${type}">${message}</div>`;
+                setTimeout(() => {
+                    messageContainer.innerHTML = '';
+                }, 5000);
+            }
+
+            // Hamburger menu toggle
+            hamburgerMenu.addEventListener('click', (event) => {
+                event.stopPropagation();
+                floatingNav.classList.toggle('active');
+            });
+
+            // Close floating menu when a link is clicked
+            floatingNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    floatingNav.classList.remove('active');
+                });
+            });
+
+            // Close floating menu if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!floatingNav.contains(event.target) && !hamburgerMenu.contains(event.target) && floatingNav.classList.contains('active')) {
+                    floatingNav.classList.remove('active');
+                }
+            });
+
+            // Adjust header layout based on screen size on load and resize
+            function adjustHeaderLayout() {
+                if (window.innerWidth <= 768) {
+                    mainNav.style.display = 'none';
+                } else {
+                    mainNav.style.display = 'flex';
+                    floatingNav.classList.remove('active');
+                }
+            }
+
+            // Initial adjustment
+            adjustHeaderLayout();
+            // Listen for window resize
+            window.addEventListener('resize', adjustHeaderLayout);
+
+
+            // Click event for upload area
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Change event for file input
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            // Handle file selection
+            function handleFile(file) {
+                messageContainer.innerHTML = ''; // Clear any previous messages
+
+                // Validate file type for video
+                if (!file.type.startsWith('video/')) {
+                    showMessage('Please upload a video file (e.g., MP4, AVI, MOV, WEBM).', 'error');
+                    selectedFile = null;
+                    fileInput.value = '';
+                    resultDisplay.innerHTML = '';
+                    return;
+                }
+
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    resultDisplay.innerHTML = `
+                        <div class="preview-card">
+                            <div class="preview-icon-container">
+                                <span class="preview-icon">🎬</span> <!-- Video icon -->
+                            </div>
+                            <p class="preview-filename">${selectedFile.name}</p>
+                            <button id="remove-file-btn" class="remove-file-btn">X</button>
+                        </div>
+                    `;
+                    document.getElementById('remove-file-btn').addEventListener('click', removeFile);
+                };
+                reader.readAsDataURL(selectedFile);
+            }
+
+            // Remove file preview
+            function removeFile() {
+                selectedFile = null;
+                fileInput.value = ''; // Clear the file input
+                resultDisplay.innerHTML = ''; // Clear the preview
+                messageContainer.innerHTML = ''; // Clear any messages
+            }
+
+            // Convert button click handler
+            convertBtn.addEventListener('click', async () => {
+                if (!selectedFile) {
+                    showMessage("Please upload a video file first.", 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('target_format', formatSelect.value);
+
+                convertBtn.disabled = true;
+                convertBtn.textContent = "Converting...";
+                showMessage("Converting video...", 'info');
+
+                try {
+                    // This is the updated backend endpoint URL
+                    const response = await fetch('https://webdevutility.onrender.com/video/convert', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || "Video conversion failed due to an unknown error.");
+                    }
+
+                    const blob = await response.blob();
+                    const downloadUrl = URL.createObjectURL(blob);
+                    resultDisplay.innerHTML = `
+                        <p>Conversion complete!</p>
+                        <div class="preview-card">
+                            <div class="preview-icon-container">
+                                <span class="preview-icon">✅</span> <!-- Converted icon -->
+                            </div>
+                            <p class="preview-filename">converted.${formatSelect.value}</p>
+                            <button id="remove-file-btn" class="remove-file-btn">X</button>
+                        </div>
+                        <a href="${downloadUrl}" download="converted.${formatSelect.value}" class="primary-button" style="margin-top: 20px;">Download Video</a>
+                    `;
+                    document.getElementById('remove-file-btn').addEventListener('click', removeFile);
+                    showMessage("Video converted successfully!", 'success');
+                } catch (error) {
+                    console.error("Video conversion error:", error);
+                    resultDisplay.innerHTML = ''; // Clear previous results on error
+                    showMessage(`Error: ${error.message}`, 'error');
+                } finally {
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = "Convert";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
