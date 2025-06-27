@@ -44,6 +44,7 @@
             padding: 20px 0;
             box-shadow: 0px 4px 12px var(--shadow-color);
             transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative; /* Needed for absolute positioning of menu */
         }
 
         header .container {
@@ -336,8 +337,87 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: none; /* Hidden by default, shown on small screens */
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Above other content */
+        }
+
+        .hamburger-menu .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+
+        /* Floating Nav Menu */
+        .floating-nav {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; /* Position below header */
+            right: 20px;
+            background-color: var(--header-bg);
+            box-shadow: 0px 8px 16px var(--shadow-color);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            min-width: 180px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .floating-nav.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .floating-nav ul {
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+        }
+
+        .floating-nav ul li {
+            margin: 0;
+            width: 100%;
+        }
+
+        .floating-nav ul li a {
+            padding: 10px 20px;
+            display: block;
+            color: var(--text-color);
+            text-align: left;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .floating-nav ul li a:hover {
+            background-color: var(--card-bg);
+        }
+
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
+            header .container {
+                flex-direction: row; /* Keep logo and hamburger on one line */
+                justify-content: space-between; /* Space them out */
+            }
+
+            nav {
+                display: none; /* Hide regular nav on small screens */
+            }
+
+            .hamburger-menu {
+                display: flex; /* Show hamburger on small screens */
+            }
+
             .hero .container, .features .container, .options {
                 flex-direction: column;
                 text-align: center;
@@ -351,16 +431,6 @@
                 font-size: 18px;
             }
 
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-                margin-top: 20px;
-            }
-
-            nav ul li {
-                margin: 10px 0;
-            }
-
             .options select, .primary-button {
                 width: 100%;
             }
@@ -371,13 +441,25 @@
     <header>
         <div class="container">
             <a href="index.html" class="logo">Utility Tools</a>
-            <nav>
+            <nav id="main-nav">
                 <ul>
                     <li><a href="#">Image Converter</a></li>
                     <li><a href="#">Text Tools</a></li>
                     <li><a href="#">Unit Converter</a></li>
                 </ul>
             </nav>
+            <div class="hamburger-menu" id="hamburger-menu">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="floating-nav" id="floating-nav">
+                <ul>
+                    <li><a href="#">Image Converter</a></li>
+                    <li><a href="#">Text Tools</a></li>
+                    <li><a href="#">Unit Converter</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -428,7 +510,8 @@
             const convertBtn = document.getElementById('convert-btn');
             const resultDisplay = document.querySelector('.result-display');
             const messageContainer = document.getElementById('message-container');
-            const body = document.body; // Still reference body for consistency, though dark-mode class is gone
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const floatingNav = document.getElementById('floating-nav');
 
             let selectedFile = null;
 
@@ -440,6 +523,26 @@
                     messageContainer.innerHTML = '';
                 }, 5000);
             }
+
+            // Hamburger menu toggle
+            hamburgerMenu.addEventListener('click', () => {
+                floatingNav.classList.toggle('active');
+            });
+
+            // Close floating menu when a link is clicked (optional, but good UX)
+            floatingNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    floatingNav.classList.remove('active');
+                });
+            });
+
+            // Close floating menu if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!floatingNav.contains(event.target) && !hamburgerMenu.contains(event.target) && floatingNav.classList.contains('active')) {
+                    floatingNav.classList.remove('active');
+                }
+            });
+
 
             // Click event for upload area
             uploadArea.addEventListener('click', () => {
