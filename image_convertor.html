@@ -242,7 +242,8 @@
                             <option value="png">PNG</option>
                             <option value="webp">WEBP</option>
                         </select>
-                        <button class="primary-button">Convert</button>
+                        <button id="convert-btn" class="primary-button">Convert</button>
+
                     </div>
                     <div class="result-display">
                         <!-- Result will be shown here -->
@@ -292,7 +293,7 @@
         const browseLink = document.getElementById('browse-link');
         const fileInput = document.getElementById('file-input');
         const formatSelect = document.getElementById('format-select');
-        const convertBtn = document.querySelector('.primary-button');
+        const convertBtn = document.getElementById('convert-btn');
         const resultDisplay = document.querySelector('.result-display');
 
         let selectedFile = null;
