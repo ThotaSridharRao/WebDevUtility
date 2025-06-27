@@ -8,12 +8,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
+        /* Define CSS Variables for the default (dark) theme */
+        :root {
+            --primary-color: #1abc9c; /* Dark mode primary green */
+            --secondary-color: #2ecc71; /* Dark mode secondary green */
+            --accent-color: #3498db; /* Dark mode accent blue */
+            --bg-color: #2c3e50; /* Dark mode background */
+            --header-bg: #34495e; /* Dark mode header */
+            --card-bg: #3b506b; /* Dark mode card */
+            --text-color: #ecf0f1; /* Dark mode text */
+            --button-bg: #1abc9c; /* Dark mode button */
+            --button-text: #FFFFFF;
+            --border-color: #5a708a; /* Dark mode border */
+            --shadow-color: rgba(0, 0, 0, 0.3); /* Dark mode shadow */
+        }
+
+        /* General Styles - now directly using dark theme variables */
         body {
             font-family: 'DM Sans', sans-serif;
-            background-color: #F6FFF8;
-            color: #6B9080;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
@@ -23,9 +40,11 @@
         }
 
         header {
-            background-color: #EAF4F4;
+            background-color: var(--header-bg);
             padding: 20px 0;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative; /* Needed for absolute positioning of menu */
         }
 
         header .container {
@@ -38,6 +57,9 @@
             font-family: 'Space Grotesk', sans-serif;
             font-size: 24px;
             font-weight: 700;
+            color: var(--text-color); /* Logo color is now dark theme text color */
+            text-decoration: none;
+            transition: color 0.3s;
         }
 
         nav ul {
@@ -53,24 +75,26 @@
 
         nav ul li a {
             text-decoration: none;
-            color: #6B9080;
+            color: var(--text-color);
             font-weight: 500;
+            transition: color 0.3s;
         }
 
         .cta-button {
-            background-color: #A4C3B2;
-            color: #F6FFF8;
+            background-color: var(--button-bg);
+            color: var(--button-text);
             border: none;
             padding: 10px 20px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 700;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
         }
 
         .primary-button {
-            background-color: #6B9080;
-            color: #F6FFF8;
+            background-color: var(--primary-color);
+            color: var(--button-text);
             border: none;
             padding: 15px 30px;
             border-radius: 20px;
@@ -78,7 +102,8 @@
             font-family: 'Space Grotesk', sans-serif;
             font-size: 18px;
             font-weight: 700;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 4px 12px var(--shadow-color);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
         }
 
         .tool-grid {
@@ -89,51 +114,143 @@
         }
 
         .tool-card {
-            background-color: #FFFFFF;
+            background-color: var(--card-bg); /* Use dark theme card background */
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 4px 12px var(--shadow-color);
             text-align: center;
             text-decoration: none;
-            color: inherit;
+            color: var(--text-color); /* Inherit text color from theme */
             display: block;
+            transition: background-color 0.3s, box-shadow 0.3s, color 0.3s;
         }
 
         .tool-card h2 {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 28px;
             margin-bottom: 15px;
-            color: #6B9080;
+            color: var(--text-color); /* Use dark theme text color */
+            transition: color 0.3s;
         }
 
         .tool-card p {
             font-size: 16px;
-            color: #A4C3B2;
+            color: var(--text-color); /* Use dark theme text color */
+            transition: color 0.3s;
         }
 
         footer {
-            background-color: #EAF4F4;
+            background-color: var(--header-bg);
             padding: 40px 0;
             text-align: center;
+            transition: background-color 0.3s;
         }
 
         .footer-links a {
             margin: 0 15px;
-            color: #6B9080;
+            color: var(--text-color);
             text-decoration: none;
+            transition: color 0.3s;
         }
 
         footer p {
             margin-top: 20px;
             font-size: 14px;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            display: none; /* Hidden by default, shown on small screens */
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Above other content */
+        }
+
+        .hamburger-menu .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+
+        /* Floating Nav Menu */
+        .floating-nav {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; /* Position below header */
+            right: 20px;
+            background-color: var(--header-bg);
+            box-shadow: 0px 8px 16px var(--shadow-color);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            min-width: 180px;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .floating-nav.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .floating-nav ul {
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+        }
+
+        .floating-nav ul li {
+            margin: 0;
+            width: 100%;
+        }
+
+        .floating-nav ul li a {
+            padding: 10px 20px;
+            display: block;
+            color: var(--text-color);
+            text-align: left;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .floating-nav ul li a:hover {
+            background-color: var(--card-bg);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: row; /* Keep logo and hamburger on one line */
+                justify-content: space-between; /* Space them out */
+            }
+
+            nav {
+                display: none; /* Hide regular nav on small screens */
+            }
+
+            .hamburger-menu {
+                display: flex; /* Show hamburger on small screens */
+            }
+
+            .cta-button {
+                display: none; /* Hide CTA button on smaller screens to make space */
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">Utility Tools</div>
-            <nav>
+            <a href="index.html" class="logo">Utility Tools</a>
+            <nav id="main-nav">
                 <ul>
                     <li><a href="#">Home</a></li>
                     <li><a href="#">Tools</a></li>
@@ -142,6 +259,19 @@
                 </ul>
             </nav>
             <button class="cta-button">Try the Tool</button>
+            <div class="hamburger-menu" id="hamburger-menu">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="floating-nav" id="floating-nav">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Tools</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -173,5 +303,49 @@
             <p>Built by developers, for developers.</p>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const floatingNav = document.getElementById('floating-nav');
+            const mainNav = document.getElementById('main-nav'); // Reference to the main desktop nav
+
+            // Hamburger menu toggle
+            hamburgerMenu.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from bubbling to document and closing immediately
+                floatingNav.classList.toggle('active');
+            });
+
+            // Close floating menu when a link is clicked
+            floatingNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    floatingNav.classList.remove('active');
+                });
+            });
+
+            // Close floating menu if clicked outside
+            document.addEventListener('click', (event) => {
+                if (!floatingNav.contains(event.target) && !hamburgerMenu.contains(event.target) && floatingNav.classList.contains('active')) {
+                    floatingNav.classList.remove('active');
+                }
+            });
+
+            // Adjust header layout based on screen size on load and resize
+            function adjustHeaderLayout() {
+                if (window.innerWidth <= 768) {
+                    mainNav.style.display = 'none'; // Hide desktop nav
+                } else {
+                    mainNav.style.display = 'flex'; // Show desktop nav
+                    floatingNav.classList.remove('active'); // Ensure floating nav is closed
+                }
+            }
+
+            // Initial adjustment
+            adjustHeaderLayout();
+
+            // Listen for window resize
+            window.addEventListener('resize', adjustHeaderLayout);
+        });
+    </script>
 </body>
 </html>
