@@ -286,94 +286,103 @@
     </footer>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const tryToolBtn = document.getElementById('try-tool-btn');
-        const toolSection = document.getElementById('tool-section');
-        const uploadArea = document.querySelector('.upload-area');
-        const browseLink = document.getElementById('browse-link');
-        const fileInput = document.getElementById('file-input');
-        const formatSelect = document.getElementById('format-select');
-        const convertBtn = document.getElementById('convert-btn');
-        const resultDisplay = document.querySelector('.result-display');
+        document.addEventListener('DOMContentLoaded', () => {
+            const tryToolBtn = document.getElementById('try-tool-btn');
+            const toolSection = document.getElementById('tool-section');
+            const uploadArea = document.querySelector('.upload-area');
+            const browseLink = document.getElementById('browse-link');
+            const fileInput = document.getElementById('file-input');
+            const formatSelect = document.getElementById('format-select');
+            const convertBtn = document.getElementById('convert-btn');
+            const resultDisplay = document.querySelector('.result-display');
 
-        let selectedFile = null;
+            let selectedFile = null;
 
-        tryToolBtn.addEventListener('click', () => {
-            toolSection.scrollIntoView({ behavior: 'smooth' });
-        });
+            tryToolBtn.addEventListener('click', () => {
+                toolSection.scrollIntoView({ behavior: 'smooth' });
+            });
 
-        browseLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            fileInput.click();
-        });
+            browseLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                fileInput.click();
+            });
 
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                selectedFile = fileInput.files[0];
-                const resultDisplay = document.querySelector('.result-display');
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    resultDisplay.innerHTML = `
-                        <p>Selected file: ${file.name}</p>
-                        <img src="${e.target.result}" alt="Selected Image Preview" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 10px;">
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    selectedFile = fileInput.files[0];
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resultDisplay.innerHTML = `
+                            <p>Selected file: ${selectedFile.name}</p> <!-- ✅ FIXED -->
+                            <img src="${e.target.result}" alt="Selected Image Preview" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 10px;">
+                        `;
+                    };
+                    reader.readAsDataURL(selectedFile); // ✅ FIXED
+                }
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFile(e.dataTransfer.files[0]);
-            }
-        });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
 
-        convertBtn.addEventListener('click', async () => {
-            if (!selectedFile) {
-                alert("Please upload an image first.");
-                return;
-            }
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    selectedFile = e.dataTransfer.files[0];
 
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('target_format', formatSelect.value);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resultDisplay.innerHTML = `
+                            <p>Selected file: ${selectedFile.name}</p> <!-- ✅ FIXED -->
+                            <img src="${e.target.result}" alt="Selected Image Preview" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 10px;">
+                        `;
+                    };
+                    reader.readAsDataURL(selectedFile); // ✅ FIXED
+                }
+            });
 
-            convertBtn.disabled = true;
-            convertBtn.textContent = "Converting...";
-
-            try {
-                const response = await fetch('https://utilitybackend-82dj.onrender.com/image/convert', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error("Conversion failed.");
+            convertBtn.addEventListener('click', async () => {
+                if (!selectedFile) {
+                    alert("Please upload an image first.");
+                    return;
                 }
 
-                const blob = await response.blob();
-                const downloadUrl = URL.createObjectURL(blob);
-                resultDisplay.innerHTML = `
-                    <p>Conversion complete!</p>
-                    <a href="${downloadUrl}" download="converted.${formatSelect.value}" class="primary-button">Download Image</a>
-                `;
-            } catch (error) {
-                resultDisplay.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-            } finally {
-                convertBtn.disabled = false;
-                convertBtn.textContent = "Convert";
-            }
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('target_format', formatSelect.value);
+
+                convertBtn.disabled = true;
+                convertBtn.textContent = "Converting...";
+
+                try {
+                    const response = await fetch('https://utilitybackend-82dj.onrender.com/image/convert', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Conversion failed.");
+                    }
+
+                    const blob = await response.blob();
+                    const downloadUrl = URL.createObjectURL(blob);
+                    resultDisplay.innerHTML = `
+                        <p>Conversion complete!</p>
+                        <a href="${downloadUrl}" download="converted.${formatSelect.value}" class="primary-button">Download Image</a>
+                    `;
+                } catch (error) {
+                    resultDisplay.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+                } finally {
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = "Convert";
+                }
             });
         });
     </script>
