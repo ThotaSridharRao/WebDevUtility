@@ -162,15 +162,25 @@
             transition: color 0.3s;
         }
 
+        .image-preview-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: var(--bg-color);
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0px 2px 8px var(--shadow-color);
+            position: relative;
+        }
+
         .preview-image-container {
             position: relative;
-            width: 120px; /* Larger preview for image */
-            height: 120px;
-            border-radius: 10px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
             overflow: hidden;
-            margin: 0 auto 20px; /* Center the image preview */
             border: 1px solid var(--border-color);
-            box-shadow: 0px 2px 8px var(--shadow-color);
         }
 
         .preview-image {
@@ -179,36 +189,39 @@
             object-fit: cover;
         }
 
+        .preview-details {
+            flex-grow: 1;
+            text-align: left;
+        }
+
         .preview-filename {
             font-size: 14px;
             color: var(--text-color);
             word-break: break-all;
-            text-align: center;
-            margin-bottom: 20px;
+            margin: 0;
         }
 
         .remove-file-btn {
             position: absolute;
-            top: -10px;
-            right: -10px;
+            top: -8px;
+            right: -8px;
             background-color: var(--button-bg);
             color: var(--button-text);
             border: none;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0;
-            box-shadow: 0px 2px 8px var(--shadow-color);
-            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
         }
 
         .remove-file-btn:hover {
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: #e74c3c; /* A redder shade on hover */
         }
 
         /* Loader/Spinner */
@@ -457,11 +470,15 @@
                     <input type="file" id="file-input" hidden accept="image/jpeg, image/png, image/webp, image/jpg">
                 </div>
                 <div id="image-preview-area" style="display: none;">
-                    <div class="preview-image-container">
-                        <img id="uploaded-image-preview" class="preview-image" alt="Uploaded Image Preview">
+                    <div class="image-preview-card">
+                        <div class="preview-image-container">
+                            <img id="uploaded-image-preview" class="preview-image" alt="Uploaded Image Preview">
+                        </div>
+                        <div class="preview-details">
+                            <p class="preview-filename" id="uploaded-image-filename"></p>
+                        </div>
                         <button id="remove-image-btn" class="remove-file-btn">X</button>
                     </div>
-                    <p class="preview-filename" id="uploaded-image-filename"></p>
                     <button id="extract-colors-btn" class="primary-button">Extract Colors</button>
                 </div>
             </div>
@@ -586,13 +603,18 @@
 
             // Upload area click
             document.querySelector('.upload-area').addEventListener('click', () => {
+                console.log('Upload area clicked, triggering file input.');
                 fileInput.click();
             });
 
             // File input change
             fileInput.addEventListener('change', (e) => {
+                console.log('File input change event detected.');
                 if (e.target.files.length > 0) {
+                    console.log('File selected:', e.target.files[0].name);
                     handleImageFile(e.target.files[0]);
+                } else {
+                    console.log('No file selected.');
                 }
             });
 
@@ -600,43 +622,62 @@
             document.querySelector('.upload-area').addEventListener('dragover', (e) => {
                 e.preventDefault();
                 e.currentTarget.classList.add('dragover');
+                console.log('Dragover event.');
             });
 
             document.querySelector('.upload-area').addEventListener('dragleave', (e) => {
                 e.currentTarget.classList.remove('dragover');
+                console.log('Dragleave event.');
             });
 
             document.querySelector('.upload-area').addEventListener('drop', (e) => {
                 e.preventDefault();
                 e.currentTarget.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) {
+                    console.log('File dropped:', e.dataTransfer.files[0].name);
                     handleImageFile(e.dataTransfer.files[0]);
+                } else {
+                    console.log('No file dropped.');
                 }
             });
 
             function handleImageFile(file) {
+                console.log('handleImageFile called with file:', file);
                 messageContainer.innerHTML = '';
                 if (!file.type.startsWith('image/')) {
                     showMessage('Please upload an image file (JPG, PNG, WEBP).', 'error');
                     resetUI();
+                    console.log('Invalid file type detected.');
                     return;
                 }
 
                 selectedFile = file;
                 const reader = new FileReader();
                 reader.onload = (e) => {
+                    console.log('FileReader loaded, setting image source and filename.');
                     uploadedImagePreview.src = e.target.result;
                     uploadedImageFilename.textContent = selectedFile.name;
                     uploadSection.style.display = 'none';
                     imagePreviewArea.style.display = 'block';
                     resultsSection.style.display = 'none'; // Hide results if already shown
+                    console.log('UI updated for image preview.');
+                };
+                reader.onerror = (error) => {
+                    console.error('FileReader error:', error);
+                    showMessage('Error reading file.', 'error');
                 };
                 reader.readAsDataURL(selectedFile);
             }
 
             // Remove image / Reset to upload state
-            removeImageBtn.addEventListener('click', resetUI);
-            reUploadBtn.addEventListener('click', resetUI);
+            removeImageBtn.addEventListener('click', () => {
+                console.log('Remove image button clicked, resetting UI.');
+                resetUI();
+            });
+            reUploadBtn.addEventListener('click', () => {
+                console.log('Re-upload button clicked, resetting UI.');
+                resetUI();
+            });
 
             function resetUI() {
                 selectedFile = null;
@@ -651,12 +692,15 @@
                 paletteGrid.innerHTML = '';
                 loader.style.display = 'none';
                 messageContainer.innerHTML = '';
+                console.log('UI reset to initial state.');
             }
 
             // Extract Colors Button Click
             extractColorsBtn.addEventListener('click', async () => {
+                console.log('Extract Colors button clicked.');
                 if (!selectedFile) {
                     showMessage('No image selected for extraction.', 'error');
+                    console.log('No image selected for extraction.');
                     return;
                 }
 
@@ -664,6 +708,7 @@
                 extractColorsBtn.disabled = true;
                 extractColorsBtn.textContent = 'Extracting...';
                 showMessage('Extracting colors...', 'info');
+                console.log('Starting color extraction process.');
 
                 const formData = new FormData();
                 formData.append('file', selectedFile);
@@ -683,6 +728,7 @@
                     renderColorPalette(data.dominant_color, data.palette);
                     resultsSection.style.display = 'block';
                     showMessage('Color palette extracted successfully!', 'success');
+                    console.log('Color extraction successful, displaying results.');
 
                 } catch (error) {
                     console.error('Color extraction error:', error);
@@ -692,11 +738,13 @@
                     loader.style.display = 'none';
                     extractColorsBtn.disabled = false;
                     extractColorsBtn.textContent = 'Extract Colors';
+                    console.log('Color extraction process finished.');
                 }
             });
 
             // Render Color Palette
             function renderColorPalette(dominantColor, palette) {
+                console.log('Rendering color palette.');
                 dominantColorSwatch.style.backgroundColor = dominantColor;
                 dominantColorSwatch.textContent = dominantColor;
                 dominantColorSwatch.onclick = () => copyToClipboard(dominantColor);
@@ -711,6 +759,7 @@
                     tile.onclick = () => copyToClipboard(color);
                     paletteGrid.appendChild(tile);
                 });
+                console.log('Color palette rendered.');
             }
 
             // Initial UI state
