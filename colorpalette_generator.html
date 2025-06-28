@@ -172,6 +172,9 @@
             margin-bottom: 20px;
             box-shadow: 0px 2px 8px var(--shadow-color);
             position: relative;
+            /* Removed max-width here as per previous request */
+            margin-left: auto; /* Center the card if it's smaller than parent */
+            margin-right: auto; /* Center the card if it's smaller than parent */
         }
 
         .preview-image-container {
@@ -197,8 +200,10 @@
         .preview-filename {
             font-size: 14px;
             color: var(--text-color);
-            word-break: break-all;
             margin: 0;
+            overflow: hidden; /* Kept for ellipsis */
+            white-space: nowrap; /* Kept for ellipsis */
+            text-overflow: ellipsis; /* Kept for ellipsis */
         }
 
         .remove-file-btn {
@@ -464,22 +469,23 @@
             <p>Upload an image to discover its dominant color and a palette of prominent colors.</p>
             <div id="message-container"></div>
 
-            <div id="upload-section">
-                <div class="upload-area">
-                    <p>Drag & drop your image here or <a href="#" id="browse-link">browse</a></p>
-                    <input type="file" id="file-input" hidden accept="image/jpeg, image/png, image/webp, image/jpg">
-                </div>
-                <div id="image-preview-area" style="display: none;">
-                    <div class="image-preview-card">
-                        <div class="preview-image-container">
-                            <img id="uploaded-image-preview" class="preview-image" alt="Uploaded Image Preview">
-                        </div>
-                        <div class="preview-details">
-                            <p class="preview-filename" id="uploaded-image-filename"></p>
-                        </div>
-                        <button id="remove-image-btn" class="remove-file-btn">X</button>
+            <!-- The static upload area -->
+            <div class="upload-area" id="upload-area-static">
+                <p>Drag & drop your image here or <a href="#" id="browse-link">browse</a></p>
+                <input type="file" id="file-input" hidden accept="image/jpeg, image/png, image/webp, image/jpg">
+            </div>
+
+            <!-- The image preview area, initially hidden -->
+            <div id="image-preview-area" style="display: none;">
+                <div class="image-preview-card">
+                    <div class="preview-image-container">
+                        <img id="uploaded-image-preview" class="preview-image" alt="Uploaded Image Preview">
+                    </div>
+                    <div class="preview-details">
+                        <p class="preview-filename"><span style="font-weight: bold;">Uploaded File:</span> <span id="uploaded-image-filename"></span></p>
                     </div>
                     <button id="extract-colors-btn" class="primary-button">Extract Colors</button>
+                    <button id="remove-image-btn" class="remove-file-btn">X</button>
                 </div>
             </div>
 
@@ -515,12 +521,12 @@
             const hamburgerMenu = document.getElementById('hamburger-menu');
             const floatingNav = document.getElementById('floating-nav');
             const mainNav = document.getElementById('main-nav');
-            const toolsMainNavLink = document.getElementById('tools-main-nav-link'); // Get the new "Tools" link
+            const toolsMainNavLink = document.getElementById('tools-main-nav-link');
 
-            const uploadSection = document.getElementById('upload-section');
+            const uploadAreaStatic = document.getElementById('upload-area-static'); // New ID for the static upload area
             const imagePreviewArea = document.getElementById('image-preview-area');
             const uploadedImagePreview = document.getElementById('uploaded-image-preview');
-            const uploadedImageFilename = document.getElementById('uploaded-image-filename');
+            const uploadedImageFilenameSpan = document.getElementById('uploaded-image-filename');
             const removeImageBtn = document.getElementById('remove-image-btn');
             const fileInput = document.getElementById('file-input');
             const extractColorsBtn = document.getElementById('extract-colors-btn');
@@ -602,7 +608,7 @@
             window.addEventListener('resize', adjustHeaderLayout);
 
             // Upload area click
-            document.querySelector('.upload-area').addEventListener('click', () => {
+            uploadAreaStatic.addEventListener('click', () => { // Use the new ID
                 console.log('Upload area clicked, triggering file input.');
                 fileInput.click();
             });
@@ -619,18 +625,18 @@
             });
 
             // Drag and drop events
-            document.querySelector('.upload-area').addEventListener('dragover', (e) => {
+            uploadAreaStatic.addEventListener('dragover', (e) => { // Use the new ID
                 e.preventDefault();
                 e.currentTarget.classList.add('dragover');
                 console.log('Dragover event.');
             });
 
-            document.querySelector('.upload-area').addEventListener('dragleave', (e) => {
+            uploadAreaStatic.addEventListener('dragleave', (e) => { // Use the new ID
                 e.currentTarget.classList.remove('dragover');
                 console.log('Dragleave event.');
             });
 
-            document.querySelector('.upload-area').addEventListener('drop', (e) => {
+            uploadAreaStatic.addEventListener('drop', (e) => { // Use the new ID
                 e.preventDefault();
                 e.currentTarget.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) {
@@ -656,9 +662,9 @@
                 reader.onload = (e) => {
                     console.log('FileReader loaded, setting image source and filename.');
                     uploadedImagePreview.src = e.target.result;
-                    uploadedImageFilename.textContent = selectedFile.name;
-                    uploadSection.style.display = 'none';
-                    imagePreviewArea.style.display = 'block';
+                    uploadedImageFilenameSpan.textContent = selectedFile.name;
+                    // Keep uploadAreaStatic visible
+                    imagePreviewArea.style.display = 'flex'; // Show the image preview area
                     resultsSection.style.display = 'none'; // Hide results if already shown
                     console.log('UI updated for image preview.');
                 };
@@ -683,9 +689,9 @@
                 selectedFile = null;
                 fileInput.value = '';
                 uploadedImagePreview.src = '';
-                uploadedImageFilename.textContent = '';
-                uploadSection.style.display = 'block';
-                imagePreviewArea.style.display = 'none';
+                uploadedImageFilenameSpan.textContent = '';
+                // uploadAreaStatic remains visible
+                imagePreviewArea.style.display = 'none'; // Hide the image preview area
                 resultsSection.style.display = 'none';
                 dominantColorSwatch.style.backgroundColor = '';
                 dominantColorSwatch.textContent = '';
