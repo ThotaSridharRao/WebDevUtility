@@ -1040,7 +1040,7 @@
                             const formData = new FormData();
                             uploadedImages.forEach(file => formData.append('files', file));
                             try {
-                                const response = await fetch('https://utilitybackend-82dj.onrender.com/pdf/img2pdf', { method: 'POST', body: formData, }); // Placeholder
+                                const response = await fetch('https://utilitybackend-82dj.onrender.com/pdf/image-to-pdf', { method: 'POST', body: formData, }); // Placeholder
                                 if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.detail || 'Failed to convert images to PDF.'); }
                                 const blob = await response.blob();
                                 showResults(blob, 'converted_images.pdf');
