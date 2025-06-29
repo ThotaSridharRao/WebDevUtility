@@ -865,6 +865,18 @@
                             const pageRange = pageRangeInput.value.trim();
                             if (!pageRange) { showMessage('Please enter page ranges to split.', 'error'); return; }
 
+                            // Added code for page range validation
+                            const parts = pageRange.split('-').map(p => parseInt(p.trim()));
+                            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                                // The backend expects 'page_range' to be a string like "1-4"
+                                // so we don't need to append 'start' and 'end' separately.
+                                // The existing formData.append('page_range', pageRange); handles this.
+                            } else {
+                                showMessage('Invalid page range format. Use something like "1-4".', 'error');
+                                return;
+                            }
+                            // End of added code
+
                             showLoader(true);
                             splitPdfBtn.disabled = true;
                             showMessage('Splitting PDF...', 'info');
